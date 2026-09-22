@@ -27,7 +27,18 @@ export function FeedPostList({
     if (!nextCursor || pending) {
       return;
     }
-    // TODO: carregar a continuação do feed e atualizar a interface.
+    setPending(true);
+
+    try {
+      const page = await getPostsPage("feed", nextCursor);
+
+      setPosts((current) => [...current, ...page.items]);
+      setNextCursor(page.nextCursor);
+    } catch {
+      setError("Não foi possível carregar mais posts.");
+    } finally {
+      setPending(false);
+    }
   }
 
   function replacePost(updated: PostDTO) {
