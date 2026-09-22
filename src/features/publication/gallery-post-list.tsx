@@ -29,7 +29,18 @@ export function GalleryPostList({
     if (!nextCursor || pending) {
       return;
     }
-    // TODO: buscar a próxima página, acrescentar seus posts e tratar falhas.
+    setPending(true);
+    try {
+      getPostsPage("user", nextCursor, userId)
+      .then((page: Page<PostDTO>) => {
+        setPosts((curr) => [...curr, ...page.items])
+        setNextCursor(page.nextCursor);
+      });      
+    } catch (e) {
+      setError(e);
+    } finally {
+      setPending(false);
+    }
   }
 
   function replacePost(updated: PostDTO) {
